@@ -5,7 +5,7 @@ const Sidebar = () => {
     e.dataTransfer.setData("text/plain", e.target.id);
   };
   return (
-    <div class="h-screen xsm:w-[25%] sm:w-1/4 lg:text-2xl sm:text-xl lg:w-1/5 bg-gray-800 flex flex-col items-center">
+    <div class="h-[100vh] xsm:w-[25%] sm:w-1/4 lg:text-2xl sm:text-xl lg:w-1/5 bg-gray-800 flex flex-col items-center">
       <h1 class="mx-5 my-2 font-bold lg:text-2xl sm:text-xl text-white self-start">
         BLOCKS
       </h1>

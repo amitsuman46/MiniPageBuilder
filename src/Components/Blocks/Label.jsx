@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-
+import { FaTrash } from "react-icons/fa";
 const Label = (props) => {
   const ref = useRef();
 
@@ -35,7 +35,10 @@ const Label = (props) => {
       props.openModal();
     }
   }
-
+  const testHandler = (id) => {
+    console.log('delete icon triggered');
+    props.onDelete(Number(id));
+  }
   console.log(props.fontSize, props.fontWeight);
 
   return (
@@ -56,7 +59,10 @@ const Label = (props) => {
       }}
       class={`absolute w-fit hover:bg-slate-400 px-1 hover:cursor-move focus:border-2 focus:border-red-600`}
     >
+       <div className="w-fit h-fit flex"> 
       <span style={{}}>{props.label}</span>
+      {window.innerWidth<420 && window.innerWidth>200 && <FaTrash onClick={(e)=>{e.stopPropagation();testHandler(props.id)}}  />}
+      </div>
     </div>
   );
 };
