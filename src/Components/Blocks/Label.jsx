@@ -24,10 +24,23 @@ const Label = (props) => {
     }
   };
 
+  const onDbClick = ()=>{
+    if (e.key === "Delete" || e.key === "Backspace") {
+      props.onDelete(Number(e.target.id));
+    }
+
+    if (e.key === "Enter") {
+      props.onSetCord({ X: props.X, Y: props.Y });
+      props.setId(e.target.id);
+      props.openModal();
+    }
+  }
+
   console.log(props.fontSize, props.fontWeight);
 
   return (
     <div
+      onDoubleClick={onDbClick}
       onKeyDown={onKeyPress}
       tabIndex={"0"}
       ref={ref}
