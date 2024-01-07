@@ -1,10 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Label from "./Blocks/Label";
 import Input from "./Blocks/Input";
 import Button from "./Blocks/Button";
 import { saveAs } from "file-saver";
 
 const Page = (props) => {
+  console.log("Hist : hist,index", props.history, props.indexHist);
+  console.log("Blocks: ", props.blocks);
+
+  const undoFn = () => {
+    if (props.indexHist - 1 >= -1) {
+      props.setBlocks(props.history[props.indexHist - 1]);
+      localStorage.setItem(
+        "pageConfig",
+        JSON.stringify(props.history[props.indexHist - 1])
+      );
+      props.setIndex((prev) => prev - 1);
+    }
+  };
+
+  const reDo = () => {
+    if (props.indexHist + 1 < props.history.length) {
+      props.setBlocks(props.history[props.indexHist + 1]);
+      localStorage.setItem(
+        "pageConfig",
+        JSON.stringify(props.history[props.indexHist + 1])
+      );
+      props.setIndex((prev) => prev + 1);
+    }
+  };
 
   const onDrop = (e) => {
     let fromSidebar = true;
@@ -96,77 +120,84 @@ const Page = (props) => {
         <div class="w-fit bg-blue-400 font-bold text-white p-1 cursor-pointer">
           <span>{`X: ${props.cord.X || 0} , Y: ${props.cord.Y || 0}`}</span>
         </div>
+        <div class="w-fit bg-blue-400 font-bold text-white p-1 ml-1 cursor-pointer">
+          <button onClick={undoFn}>Undo</button>
+        </div>
+        <div class="w-fit bg-blue-400 font-bold text-white p-1 cursor-pointer">
+          <button onClick={reDo}>Redo</button>
+        </div>
       </div>
-      {props.blocks.map((ele) => {
-        switch (ele.type) {
-          case "labelId":
-            return (
-              <Label
-                setId={props.setId}
-                openModal={() => {
-                  props.setModalTitle("Label");
-                  props.setTextM(ele.text);
-                  props.setFontWt(ele.fontWeight);
-                  props.setFontsize(ele.fontSize);
-                  props.onModalOpen();
-                }}
-                onDelete={props.onDelete}
-                id={ele.id}
-                key={ele.id}
-                X={ele.X}
-                Y={ele.Y}
-                fontSize={ele.fontSize}
-                fontWeight={ele.fontWeight}
-                label={ele.text || "This is a label"}
-                onSetCord={props.onSetCord}
-              />
-            );
-          case "inputId":
-            return (
-              <Input
-                setId={props.setId}
-                openModal={() => {
-                  props.setModalTitle("Input");
-                  props.setTextM(ele.text);
-                  props.setFontWt(ele.fontWeight);
-                  props.setFontsize(ele.fontSize);
-                  props.onModalOpen();
-                }}
-                onDelete={props.onDelete}
-                id={ele.id}
-                key={ele.id}
-                X={ele.X}
-                Y={ele.Y}
-                text={ele.text}
-                fontSize={ele.fontSize}
-                fontWeight={ele.fontWeight}
-                onSetCord={props.onSetCord}
-              />
-            );
-          case "buttonId":
-            return (
-              <Button
-                setId={props.setId}
-                openModal={() => {
-                  props.setModalTitle("Button");
-                  props.setTextM(ele.text);
-                  props.setFontWt(ele.fontWeight);
-                  props.setFontsize(ele.fontSize);
-                  props.onModalOpen();
-                }}
-                onDelete={props.onDelete}
-                id={ele.id}
-                key={ele.id}
-                X={ele.X}
-                Y={ele.Y}
-                fontSize={ele.fontSize}
-                fontWeight={ele.fontWeight}
-                onSetCord={props.onSetCord}
-                btnName={ele.text}
-              />
-            );
-        }
-      })}
+      {props.blocks &&
+        props.blocks.map((ele) => {
+          switch (ele.type) {
+            case "labelId":
+              return (
+                <Label
+                  setId={props.setId}
+                  openModal={() => {
+                    props.setModalTitle("Label");
+                    props.setTextM(ele.text);
+                    props.setFontWt(ele.fontWeight);
+                    props.setFontsize(ele.fontSize);
+                    props.onModalOpen();
+                  }}
+                  onDelete={props.onDelete}
+                  id={ele.id}
+                  key={ele.id}
+                  X={ele.X}
+                  Y={ele.Y}
+                  fontSize={ele.fontSize}
+                  fontWeight={ele.fontWeight}
+                  label={ele.text || "This is a label"}
+                  onSetCord={props.onSetCord}
+                />
+              );
+            case "inputId":
+              return (
+                <Input
+                  setId={props.setId}
+                  openModal={() => {
+                    props.setModalTitle("Input");
+                    props.setTextM(ele.text);
+                    props.setFontWt(ele.fontWeight);
+                    props.setFontsize(ele.fontSize);
+                    props.onModalOpen();
+                  }}
+                  onDelete={props.onDelete}
+                  id={ele.id}
+                  key={ele.id}
+                  X={ele.X}
+                  Y={ele.Y}
+                  text={ele.text}
+                  fontSize={ele.fontSize}
+                  fontWeight={ele.fontWeight}
+                  onSetCord={props.onSetCord}
+                />
+              );
+            case "buttonId":
+              return (
+                <Button
+                  setId={props.setId}
+                  openModal={() => {
+                    props.setModalTitle("Button");
+                    props.setTextM(ele.text);
+                    props.setFontWt(ele.fontWeight);
+                    props.setFontsize(ele.fontSize);
+                    props.onModalOpen();
+                  }}
+                  onDelete={props.onDelete}
+                  id={ele.id}
+                  key={ele.id}
+                  X={ele.X}
+                  Y={ele.Y}
+                  fontSize={ele.fontSize}
+                  fontWeight={ele.fontWeight}
+                  onSetCord={props.onSetCord}
+                  btnName={ele.text}
+                />
+              );
+          }
+        })}
     </div>
   );
 };

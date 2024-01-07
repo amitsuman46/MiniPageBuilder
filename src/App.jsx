@@ -4,6 +4,10 @@ import Page from "./Components/Page";
 import ModalBackdrop from "./Components/ModalBackdrop";
 import { useEffect, useState } from "react";
 function App() {
+  const [history, setHistory] = useState([]);
+  const [indexHist, setIndex] = useState(-1);
+  const [undoBlocks, setUndo] = useState([]);
+  const [reDoBlocks, setRedo] = useState([]);
   const [modal, setModal] = useState(false);
   const [movedId, setId] = useState(null);
   const [modalTitle, setModalTitle] = useState(null);
@@ -16,6 +20,11 @@ function App() {
   useEffect(() => {
     if (localStorage.getItem("pageConfig") !== null) {
       setBlocks(JSON.parse(localStorage.getItem("pageConfig")));
+      setHistory((prev) => [
+        ...prev,
+        JSON.parse(localStorage.getItem("pageConfig")),
+      ]);
+      setIndex(0);
     }
   }, []);
 
@@ -25,7 +34,7 @@ function App() {
   };
 
   const onSaveHandler = (cordX, cordY, text, fontSize, fontWeight) => {
-    console.log(cordX, cordY, text, fontSize, fontWeight,movedId);
+    console.log(cordX, cordY, text, fontSize, fontWeight, movedId);
     if (
       movedId !== "labelId" &&
       movedId !== "inputId" &&
@@ -56,7 +65,7 @@ function App() {
         console.log(newArray);
         return newArray;
       });
-      console.log("Moving", movedId);
+      console.log("Editing existing", movedId);
     } else {
       console.log("Generating New", movedId);
       const newArray = [
@@ -73,6 +82,17 @@ function App() {
       ];
       localStorage.setItem("pageConfig", JSON.stringify(newArray));
       setBlocks(newArray);
+      setUndo((prev) => {
+        const undoUpdated = [...prev];
+        undoUpdated.push(newArray);
+        return undoUpdated;
+      });
+      setHistory((prev) => {
+        const undoUpdated = [...prev];
+        undoUpdated.push(newArray);
+        return undoUpdated;
+      });
+      setIndex((prev) => prev + 1);
       console.log(newArray);
     }
     setTextM("");
@@ -93,7 +113,7 @@ function App() {
 
   return (
     <>
-      <div class='h-[100vh] w-[100vw]'>
+      <div class="h-[100vh] w-[100vw]">
         {modal && (
           <ModalBackdrop
             textM={textM}
@@ -125,6 +145,14 @@ function App() {
             setFontsize={setFontsize}
             onSave={onSaveHandler}
             setBlocks={setBlocks}
+            undo={undoBlocks}
+            reDoBlocks={reDoBlocks}
+            setRedo={setRedo}
+            setUndo={setUndo}
+            setHistory={setHistory}
+            history={history}
+            indexHist={indexHist}
+            setIndex={setIndex}
           />
           <Sidebar />
         </div>
