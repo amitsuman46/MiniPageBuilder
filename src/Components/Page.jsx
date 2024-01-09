@@ -1,32 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Label from "./Blocks/Label";
 import Input from "./Blocks/Input";
 import Button from "./Blocks/Button";
 import { saveAs } from "file-saver";
+import { AppContext } from "../context/AppContext";
 
 const Page = (props) => {
-  console.log("Hist : hist,index", props.history, props.indexHist);
-  console.log("Blocks: ", props.blocks);
+  const context = useContext(AppContext);
+
+  console.log("Hist : hist,index", context.history, context.indexHist);
+  console.log("Blocks: ", context.blocks);
 
   const undoFn = () => {
-    if (props.indexHist - 1 >= -1) {
-      props.setBlocks(props.history[props.indexHist - 1]);
+    if (context.indexHist - 1 >= -1) {
+      context.setBlocks(context.history[context.indexHist - 1]);
       localStorage.setItem(
         "pageConfig",
-        JSON.stringify(props.history[props.indexHist - 1])
+        JSON.stringify(context.history[context.indexHist - 1])
       );
-      props.setIndex((prev) => prev - 1);
+      context.setIndex((prev) => prev - 1);
     }
   };
 
   const reDo = () => {
-    if (props.indexHist + 1 < props.history.length) {
-      props.setBlocks(props.history[props.indexHist + 1]);
+    if (context.indexHist + 1 < context.history.length) {
+      context.setBlocks(context.history[context.indexHist + 1]);
       localStorage.setItem(
         "pageConfig",
-        JSON.stringify(props.history[props.indexHist + 1])
+        JSON.stringify(context.history[context.indexHist + 1])
       );
-      props.setIndex((prev) => prev + 1);
+      context.setIndex((prev) => prev + 1);
     }
   };
 
@@ -35,13 +38,13 @@ const Page = (props) => {
     const id = e.dataTransfer.getData("text/plain");
     switch (id) {
       case "labelId":
-        props.setModalTitle("Label");
+        context.setModalTitle("Label");
         break;
       case "inputId":
-        props.setModalTitle("Input");
+        context.setModalTitle("Input");
         break;
       case "buttonId":
-        props.setModalTitle("Button");
+        context.setModalTitle("Button");
         break;
       default:
         fromSidebar = false;
@@ -66,30 +69,30 @@ const Page = (props) => {
         id
       );
 
-      const index = props.blocks.findIndex(
+      const index = context.blocks.findIndex(
         (obj) => Number(obj.id) === Number(id)
       );
       const updatedObject = {
-        text: props.blocks[index].text,
+        text: context.blocks[index].text,
         X: e.pageX,
         Y: e.pageY,
-        fontSize: props.blocks[index].fontSize,
-        fontWeight: props.blocks[index].fontWeight,
+        fontSize: context.blocks[index].fontSize,
+        fontWeight: context.blocks[index].fontWeight,
         id: Number(id),
-        type: props.blocks[index].type,
+        type: context.blocks[index].type,
       };
       const newArray =
         index !== -1
           ? [
-              ...props.blocks.slice(0, index),
+              ...context.blocks.slice(0, index),
               updatedObject,
-              ...props.blocks.slice(index + 1),
+              ...context.blocks.slice(index + 1),
             ]
-          : [...props.blocks, updatedObject];
+          : [...context.blocks, updatedObject];
 
       localStorage.setItem("pageConfig", JSON.stringify(newArray));
 
-      props.setBlocks(newArray);
+      context.setBlocks(newArray);
     }
   };
   const onDragOver = (e) => {
@@ -118,7 +121,7 @@ const Page = (props) => {
           <span> Export Configuration </span>
         </div>
         <div class="w-fit bg-blue-400 font-bold text-white p-1 cursor-pointer">
-          <span>{`X: ${props.cord.X || 0} , Y: ${props.cord.Y || 0}`}</span>
+          <span>{`X: ${context.cord.X || 0} , Y: ${context.cord.Y || 0}`}</span>
         </div>
         <div class="w-fit bg-blue-400 font-bold text-white p-1 ml-1 cursor-pointer">
           <button onClick={undoFn}>Undo</button>
@@ -127,18 +130,17 @@ const Page = (props) => {
           <button onClick={reDo}>Redo</button>
         </div>
       </div>
-      {props.blocks &&
-        props.blocks.map((ele) => {
+      {context.blocks &&
+        context.blocks.map((ele) => {
           switch (ele.type) {
             case "labelId":
               return (
                 <Label
-                  setId={props.setId}
                   openModal={() => {
-                    props.setModalTitle("Label");
-                    props.setTextM(ele.text);
-                    props.setFontWt(ele.fontWeight);
-                    props.setFontsize(ele.fontSize);
+                    context.setModalTitle("Label");
+                    context.setTextM(ele.text);
+                    context.setFontWt(ele.fontWeight);
+                    context.setFontsize(ele.fontSize);
                     props.onModalOpen();
                   }}
                   onDelete={props.onDelete}
@@ -155,12 +157,11 @@ const Page = (props) => {
             case "inputId":
               return (
                 <Input
-                  setId={props.setId}
                   openModal={() => {
-                    props.setModalTitle("Input");
-                    props.setTextM(ele.text);
-                    props.setFontWt(ele.fontWeight);
-                    props.setFontsize(ele.fontSize);
+                    context.setModalTitle("Input");
+                    context.setTextM(ele.text);
+                    context.setFontWt(ele.fontWeight);
+                    context.setFontsize(ele.fontSize);
                     props.onModalOpen();
                   }}
                   onDelete={props.onDelete}
@@ -177,12 +178,11 @@ const Page = (props) => {
             case "buttonId":
               return (
                 <Button
-                  setId={props.setId}
                   openModal={() => {
-                    props.setModalTitle("Button");
-                    props.setTextM(ele.text);
-                    props.setFontWt(ele.fontWeight);
-                    props.setFontsize(ele.fontSize);
+                    context.setModalTitle("Button");
+                    context.setTextM(ele.text);
+                    context.setFontWt(ele.fontWeight);
+                    context.setFontsize(ele.fontSize);
                     props.onModalOpen();
                   }}
                   onDelete={props.onDelete}

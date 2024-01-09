@@ -1,8 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { AppContext } from "../../context/AppContext";
 const Input = (props) => {
   const ref = useRef();
   const [inputVal, setInput] = useState(null);
+  const context = useContext(AppContext);
 
   const dragFn = (e) => {
     e.dataTransfer.setData("text/plain", props.id);
@@ -21,7 +23,7 @@ const Input = (props) => {
     if (e.key === "Enter") {
       props.onSetCord({ X: props.X, Y: props.Y });
       console.log(e.target);
-      props.setId(e.target.id);
+      context.setId(e.target.id);
       props.openModal();
     }
   };

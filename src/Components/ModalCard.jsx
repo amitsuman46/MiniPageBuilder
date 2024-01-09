@@ -1,19 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
-const ModalCard = ({
-  onClose,
-  cord,
-  onSave,
-  title,
-  textM,
-  fontSize,
-  fontWt,
-}) => {
+const ModalCard = ({ onClose, onSave }) => {
   const textRef = useRef();
   const xRef = useRef();
   const yRef = useRef();
   const fontSRef = useRef();
   const fontWRef = useRef();
+
+  const context = useContext(AppContext);
 
   const onSaveHandler = () => {
     const text = textRef.current.value;
@@ -25,13 +20,13 @@ const ModalCard = ({
     onSave(cordX, cordY, text, fontSize, fontWeight);
   };
 
-  console.log(title);
+  console.log(context.modalTitle);
   return (
     <>
       <div class="bg-white h-[90vh] w-[60vw] sm:w-[40vw] flex flex-col justify-around rounded-md items-center mt-5">
         <div class="self-start flex justify-between mt-2 ml-2 mr-2 items-center h-[8%] w-[90%] sm:w-[90%] sm:h-[10%]">
           <h1 class="text-sm font-bold justify-self-start ml-2 sm:text-lg">
-            Edit {title}
+            Edit {context.modalTitle}
           </h1>
           <button
             class="justify-self-end lg:text-2xl mb-2 sm:mr-2"
@@ -42,14 +37,11 @@ const ModalCard = ({
         </div>
         <hr class="w-[95%]" />
         <div class="flex flex-col my-2 mx-2  h-[8%] w-[80%] sm:w-[90%] sm:h-[10%]">
-          <label
-            htmlFor="text"
-            class="self-start text-sm font-semibold"
-          >
+          <label htmlFor="text" class="self-start text-sm font-semibold">
             Text
           </label>
           <input
-            defaultValue={textM}
+            defaultValue={context.textM}
             ref={textRef}
             type="text"
             id="text"
@@ -66,7 +58,7 @@ const ModalCard = ({
           </label>
           <input
             ref={xRef}
-            defaultValue={cord.X}
+            defaultValue={context.cord.X}
             type="text"
             id="corX"
             class=" text-sm p-1 border-2 rounded-md ml-1 mr-1 w-full sm:h-[80%]"
@@ -81,7 +73,7 @@ const ModalCard = ({
           </label>
           <input
             ref={yRef}
-            defaultValue={cord.Y}
+            defaultValue={context.cord.Y}
             type="text"
             id="corY"
             class="p-1 text-sm border-2 rounded-md ml-1 mr-1 w-full sm:h-[80%]"
@@ -96,7 +88,7 @@ const ModalCard = ({
           </label>
           <input
             ref={fontSRef}
-            defaultValue={fontSize}
+            defaultValue={context.fontSize}
             type="text"
             id="fontSize"
             class="p-1 text-sm border-2 rounded-md ml-1 mr-1 w-full sm:h-[80%]"
@@ -111,7 +103,7 @@ const ModalCard = ({
           </label>
           <input
             ref={fontWRef}
-            defaultValue={fontWt}
+            defaultValue={context.fontWt}
             type="text"
             id="fontWeight"
             class="p-1 text-sm border-2 rounded-md ml-1 mr-1 w-full sm:h-[80%]"

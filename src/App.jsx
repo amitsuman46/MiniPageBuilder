@@ -2,56 +2,34 @@ import "./index.css";
 import Sidebar from "./Components/Sidebar";
 import Page from "./Components/Page";
 import ModalBackdrop from "./Components/ModalBackdrop";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
+import { AppContext } from "./context/AppContext";
 function App() {
-  const [history, setHistory] = useState([]);
-  const [indexHist, setIndex] = useState(-1);
-  const [undoBlocks, setUndo] = useState([]);
-  const [reDoBlocks, setRedo] = useState([]);
-  const [modal, setModal] = useState(false);
-  const [movedId, setId] = useState(null);
-  const [modalTitle, setModalTitle] = useState(null);
-  const [cord, setCord] = useState({ X: "", Y: "" });
-  const [blocks, setBlocks] = useState([]);
-  const [textM, setTextM] = useState(null);
-  const [fontSize, setFontsize] = useState(null);
-  const [fontWt, setFontWt] = useState(null);
-
-  useEffect(() => {
-    if (localStorage.getItem("pageConfig") !== null) {
-      setBlocks(JSON.parse(localStorage.getItem("pageConfig")));
-      setHistory((prev) => [
-        ...prev,
-        JSON.parse(localStorage.getItem("pageConfig")),
-      ]);
-      setIndex(0);
-    }
-  }, []);
-
+  const context = useContext(AppContext);
   const onSetCordHandler = (coordinates, id) => {
-    setCord(coordinates);
-    setId(id);
+    context.setCord(coordinates);
+    context.setId(id);
   };
 
   const onSaveHandler = (cordX, cordY, text, fontSize, fontWeight) => {
-    console.log(cordX, cordY, text, fontSize, fontWeight, movedId);
+    console.log(cordX, cordY, text, fontSize, fontWeight, context.movedId);
     if (
-      movedId !== "labelId" &&
-      movedId !== "inputId" &&
-      movedId !== "buttonId"
+      context.movedId !== "labelId" &&
+      context.movedId !== "inputId" &&
+      context.movedId !== "buttonId"
     ) {
-      setBlocks((prev) => {
+      context.setBlocks((prev) => {
         const indexToUpdate = prev.findIndex(
-          (item) => Number(item.id) === Number(movedId)
+          (item) => Number(item.id) === Number(context.movedId)
         );
         const updatedObject = {
-          text: text || blocks[indexToUpdate].text,
+          text: text || context.blocks[indexToUpdate].text,
           X: cordX,
           Y: cordY,
           fontSize: fontSize,
           fontWeight: fontWeight,
-          id: Number(movedId),
-          type: blocks[indexToUpdate].type,
+          id: Number(context.movedId),
+          type: context.blocks[indexToUpdate].type,
         };
         const newArray =
           indexToUpdate !== -1
@@ -65,13 +43,13 @@ function App() {
         console.log(newArray);
         return newArray;
       });
-      console.log("Editing existing", movedId);
+      console.log("Editing existing", context.movedId);
     } else {
-      console.log("Generating New", movedId);
+      console.log("Generating New", context.movedId);
       const newArray = [
-        ...blocks,
+        ...context.blocks,
         {
-          type: movedId,
+          type: context.movedId,
           text: text,
           X: cordX,
           Y: cordY,
@@ -81,78 +59,56 @@ function App() {
         },
       ];
       localStorage.setItem("pageConfig", JSON.stringify(newArray));
-      setBlocks(newArray);
-      setUndo((prev) => {
+      context.setBlocks(newArray);
+      context.setUndo((prev) => {
         const undoUpdated = [...prev];
         undoUpdated.push(newArray);
         return undoUpdated;
       });
-      setHistory((prev) => {
+      context.setHistory((prev) => {
         const undoUpdated = [...prev];
         undoUpdated.push(newArray);
         return undoUpdated;
       });
-      setIndex((prev) => prev + 1);
+      context.setIndex((prev) => prev + 1);
       console.log(newArray);
     }
-    setTextM("");
-    setFontWt("");
-    setFontsize("");
-    setFontWt("");
-    setModal(false);
-    setId(null);
+    context.setTextM("");
+    context.setFontWt("");
+    context.setFontsize("");
+    context.setFontWt("");
+    context.setModal(false);
+    context.setId(null);
   };
 
   const onDeleteHandler = (id) => {
-    const newArray = blocks.filter((ele) => {
+    const newArray = context.blocks.filter((ele) => {
       return ele.id !== id;
     });
     localStorage.setItem("pageConfig", JSON.stringify(newArray));
-    setBlocks(newArray);
+    context.setBlocks(newArray);
   };
 
   return (
     <>
       <div class="h-[100vh] w-[100vw]">
-        {modal && (
+        {context.modal && (
           <ModalBackdrop
-            textM={textM}
-            fontSize={fontSize}
-            fontWt={fontWt}
-            title={modalTitle}
             onSave={onSaveHandler}
-            cord={cord}
             onClose={() => {
-              setTextM("");
-              setFontWt("");
-              setFontsize("");
-              setFontWt("");
-              setModal(false);
+              context.setTextM("");
+              context.setFontWt("");
+              context.setFontsize("");
+              context.setModal(false);
             }}
           />
         )}
         <div class="flex">
           <Page
-            setModalTitle={setModalTitle}
-            setId={setId}
             onDelete={onDeleteHandler}
-            blocks={blocks}
-            cord={cord}
             onSetCord={onSetCordHandler}
-            onModalOpen={() => setModal(true)}
-            setTextM={setTextM}
-            setFontWt={setFontWt}
-            setFontsize={setFontsize}
+            onModalOpen={() => context.setModal(true)}
             onSave={onSaveHandler}
-            setBlocks={setBlocks}
-            undo={undoBlocks}
-            reDoBlocks={reDoBlocks}
-            setRedo={setRedo}
-            setUndo={setUndo}
-            setHistory={setHistory}
-            history={history}
-            indexHist={indexHist}
-            setIndex={setIndex}
           />
           <Sidebar />
         </div>
